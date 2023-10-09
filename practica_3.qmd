@@ -1,0 +1,16 @@
+---
+title: "Practica 3"
+format: revealjs
+author: "Marcos Gibert y Javi Torres"
+editor: visual
+---
+
+## Presentación
+
+
+## Database
+
+
+
+## Análisis
+
