@@ -9,8 +9,11 @@ editor: visual
 
 El dataset Boston Housing Dataset es un conjunto de datos sobre la ciudad de Boston en relación a las viviendas. Fue realizado por el censo de 1970 y consta de 506 observaciones con 14 variables:
 
+<<<<<<< HEAD
 1. **CRIM (Tasa de criminalidad):** Representa la tasa de criminalidad per cápita por vecindario.
 
+=======
+>>>>>>> 45d02f8b45dbde22347fadde50035ee683aff0bd
 2.  **ZN (Proporción de tierras residenciales para lotes de más de 25,000 pies cuadrados):** Indica la proporción de terreno residencial dividido en lotes de más de 25,000 pies cuadrados.
 
 3.  **INDUS (Proporción de acres de negocios no minoristas por ciudad):** Mide la proporción de tierra utilizada para negocios no minoristas.
@@ -39,7 +42,11 @@ El dataset Boston Housing Dataset es un conjunto de datos sobre la ciudad de Bos
 
 Todas las variables son cuantitativas excepto **CHAS (Variable ficticia de Charles River)** que es cualitativa nominal y **RAD (Índice de accesibilidad a carreteras radiales)** que es ordinal.
 
+<<<<<<< HEAD
 Nuestro objetivo será determinar las relaciones entre las características de un área determinada y el precio medio de la vivienda en dicha área. También nos preguntaremos que diferentes mediciones pueden estar relacionadas con la contaminación.
+=======
+Nuestro objetivo será determinar las relaciones entre las características de un área determinada y el precio medio de la vivienda en dicha área.
+>>>>>>> 45d02f8b45dbde22347fadde50035ee683aff0bd
 
 ## Database
 
@@ -208,9 +215,14 @@ Vemos que en general el precio medio de la vivienda es menor si el acceso a carr
 library(GGally)
 df_subset=df
 
+<<<<<<< HEAD
 df_subset <- df %>% 
   select(6,11,13,14) %>%
   na.omit
+=======
+df_subset <- df_subset %>% 
+  select(c(6,11,13,14))
+>>>>>>> 45d02f8b45dbde22347fadde50035ee683aff0bd
   
 
 pairs(df_subset, col='blue')
@@ -263,6 +275,7 @@ Road_acces <- ggplot(data = df, aes(x = rad, y = nox)) +
 
 Road_acces
 ```
+<<<<<<< HEAD
 
 Ahora vamos a ver la relación de las variables con la contaminación. En el gráfico multivariante de correlaciones hemos podido observar que nuestra variable NOX, que mide el nivel de óxidos nítricos y así nos da una idea del nivel de contaminación, está relacionada con las variables AGE, INDUS y DIS.
 
@@ -297,3 +310,5 @@ Road_acces <- ggplot(data = df, aes(x = rad, y = nox)) +
 
 Road_acces
 ```
+=======
+>>>>>>> 45d02f8b45dbde22347fadde50035ee683aff0bd
