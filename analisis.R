@@ -35,4 +35,5 @@ pairs(a_1,
       pch = 18)
 
 ggpairs(a_2)
+#
 

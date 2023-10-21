@@ -274,7 +274,7 @@ a_2 <- data %>%
 ggpairs(a_2)
 ```
 En este gráfico multivariante observamos que una medida de la contaminación está positivamente correlada con la cantidad de viviendas antiguas y la proporción de tierra de negocios mayoristas. Y está negativamente correlada con la distancia a los centros de empleo.
-Ahora también nos podemos preguntar si las viviendas más cercanas al río tienen menor contaminación. En el sigüiente gráfico lo estudiaremos:
+Ahora también nos podemos preguntar si las viviendas más cercanas al río tienen menor contaminación. En el sigüiente gráfico lo estudiaremos:j
 ```{r}
 River_bound <- ggplot(data = df, aes(x = chas, y = nox)) +
   geom_boxplot(aes(color = chas), width = 0.3, show.legend = FALSE) +

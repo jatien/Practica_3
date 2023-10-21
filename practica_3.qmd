@@ -23,7 +23,7 @@ El dataset Boston Housing Dataset es un conjunto de datos sobre la ciudad de Bos
 
 8.  **DIS (Distancias ponderadas a cinco centros de empleo de Boston):** Representa distancias ponderadas a centros de empleo en Boston.
 
-9.  **RAD (Índice de accesibilidad a carreteras radiales):** Mide la accesibilidad a carreteras radiales principales.
+9.  **RAD (Índice de accesibilidad a carreteras radiales):** Mide la accesibilidad a carreteras radiales principales..
 
 10. **TAX (Tasa de impuesto a la propiedad de valor total por \$10,000):** Indica la tasa de impuesto a la propiedad.
 
