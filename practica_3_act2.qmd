@@ -1,0 +1,306 @@
+---
+title: "Practica 3"
+format: html
+author: "Marcos Gibert y Javi Torres"
+editor: visual
+---
+
+## Presentación
+
+El dataset Boston Housing Dataset es un conjunto de datos sobre la ciudad de Boston en relación a las viviendas. Fue realizado por el censo de 1970 y consta de 506 observaciones con 14 variables:
+
+1. **CRIM (Tasa de criminalidad):** Representa la tasa de criminalidad per cápita por vecindario.
+
+2.  **ZN (Proporción de tierras residenciales para lotes de más de 25,000 pies cuadrados):** Indica la proporción de terreno residencial dividido en lotes de más de 25,000 pies cuadrados.
+
+3.  **INDUS (Proporción de acres de negocios no minoristas por ciudad):** Mide la proporción de tierra utilizada para negocios no minoristas.
+
+4.  **CHAS (Variable ficticia de Charles River):** Es una variable binaria que indica si una vivienda limita con el río Charles (1 si es cierto, 0 si no).
+
+5.  **NOX (Concentración de óxidos nítricos):** Representa la concentración de óxidos nítricos (en partes por 10 millones). En general se suele usar esta medida para estudiar la polución del aire.
+
+6.  **RM (Número medio de habitaciones por vivienda):** Indica el promedio de habitaciones por vivienda en el vecindario.
+
+7.  **AGE (Proporción de unidades ocupadas por sus propietarios construidas antes de 1940):** Mide la proporción de unidades ocupadas por sus propietarios construidas antes de 1940.
+
+8.  **DIS (Distancias ponderadas a cinco centros de empleo de Boston):** Representa distancias ponderadas a centros de empleo en Boston.
+
+9.  **RAD (Índice de accesibilidad a carreteras radiales):** Mide la accesibilidad a carreteras radiales principales.
+
+10. **TAX (Tasa de impuesto a la propiedad de valor total por \$10,000):** Indica la tasa de impuesto a la propiedad.
+
+11. **PTRATIO (Proporción alumno-maestro):** Mide la proporción de alumnos por maestro en las escuelas del vecindario.
+
+12. **B (1000(Bk - 0.63)\^2), donde Bk es la proporción de personas de raza negra por ciudad:** Este término está relacionado con la proporción de personas de raza negra en la ciudad y se ha transformado para resaltar las áreas con alta proporción de personas de raza negra.
+
+13. **LSTAT (Porcentaje de la población de bajos ingresos):** Representa el porcentaje de la población con bajos ingresos.
+
+14. **MEDV (Valor medio de las viviendas ocupadas por sus propietarios en \$1000):** Es la variable objetivo que queremos predecir, el valor medio de las viviendas.
+
+Todas las variables son cuantitativas excepto **CHAS (Variable ficticia de Charles River)** que es cualitativa nominal y **RAD (Índice de accesibilidad a carreteras radiales)** que es ordinal.
+
+
+Nuestro objetivo será determinar las relaciones entre las características de un área determinada y el precio medio de la vivienda en dicha área. También nos preguntaremos que diferentes mediciones pueden estar relacionadas con la contaminación.
+
+Nuestro objetivo será determinar las relaciones entre las características de un área determinada y el precio medio de la vivienda en dicha área. Además también exploraremos los efectos de la polución.
+
+## Database
+
+Podemos encontrar el dataset en el paquete MASS
+
+```{r,echo=FALSE,warnings=FALSE}
+library(MASS)
+library(ggplot2)
+library(tidyverse)
+df <- as.data.frame(Boston)
+
+```
+
+Veamos un resumen de los datos
+
+```{r,echo=FALSE,warnings=FALSE}
+summary(df)
+```
+
+Veamos la estructura de los datos:
+
+```{r,echo=FALSE,warnings=FALSE}
+head(df,10)
+
+```
+
+El dataset que tenemos ya lo encontramos de forma tidy. Sin embargo, observamos en los siguientes gráficos que tiene muchos outliers que habrá que tener en cuenta a la hora de estudiar los datos
+
+```{r,warning=FALSE,error=FALSE,echo=FALSE}
+
+selected_vars <- c("dis", "tax", "ptratio", "black", "lstat", "medv")
+df_subset <- df[, selected_vars]
+
+par(mfrow = c(2, 3), mar = c(2, 2, 1, 1))  
+
+for (col in names(df_subset)) {
+  boxplot(df_subset[, col], main = col, col = "lightblue", border = "black", notch = TRUE)
+}
+
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 2))
+
+
+```
+
+```{r,warning=FALSE,error=FALSE,echo=FALSE}
+selected_vars <- c("crim", "zn", "indus", "nox", "rm", "age")
+df_subset <- df[, selected_vars]
+
+# Set up a larger plotting area with smaller margins
+par(mfrow = c(2, 3), mar = c(2, 2, 1, 1))  # Adjust the margin as needed
+
+# Create boxplots for each selected variable
+for (col in names(df_subset)) {
+  boxplot(df_subset[, col], main = col, col = "lightblue", border = "black", notch = TRUE)
+}
+
+# Reset the plotting area
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 2))
+
+```
+
+Cambiamos la variable chas por 'sí' si es un 1 y 'no' si es un '0' para trabajar con ella de manera más cómoda.
+
+```{r,echo=FALSE,warnings=FALSE}
+df$chas <- ifelse(df$chas == 1, 'sí', 'no')
+```
+
+Este gráfico nos muestra que la variable rad toma valores entre 1 y 24, aunque la mayoría están entre 0 y 8, a excepción de un grupo que tiene 24
+
+```{r,warning=FALSE,error=FALSE,echo=FALSE}
+ggplot(df, aes(x = rad)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 30, fill = "lightblue", color = "black", alpha = 0.7) +
+  geom_density(alpha = 0.5, fill = "orange") +
+  labs(title = "Distribución de la variable rad",
+       x = "Valor de rad",
+       y = "Densidad") +
+  theme_minimal()
+```
+
+Lo podemos ver más claro en esta tabla:
+
+```{r,echo=FALSE,warnings=FALSE}
+count(df,df$rad)
+
+```
+
+Para resaltar que se trata de una variable ordinal distinguiremos entre 'bajo' si tiene menos de 4; 'medio' si tiene entre 4 y 5; 'medio alto' si tiene más de 5 pero menos de 24 y 'alto' si tiene 24.
+
+```{r,echo=FALSE,warnings=FALSE}
+df <-df %>%
+  mutate(rad = case_when(
+    rad < 4 ~ 'bajo',
+    rad >= 4 & rad < 6 ~ 'medio',
+    rad >= 6 & rad < 24 ~ 'medio alto',
+    rad==24 ~ 'alto'),
+  .keep='all', .after=dis
+  )
+
+```
+
+## Análisis
+# Precio medio de la vivienda
+
+Veamos la matriz de correlaciones de las variables cuantitativas
+
+```{r,echo=FALSE,warnings=FALSE,error=FALSE,message=FALSE}
+df_numeric=df
+df_numeric[,4] <- NULL
+df_numeric[,8] <- NULL
+
+
+library(corrplot)
+cor_matrix <- cor(df_numeric)
+corrplot(cor_matrix, method = "color")
+
+```
+
+Observamos rm (el número de habitaciones) tiene el coeficiente de correlación más alto con medv, es decir, el precio medio de la vivienda tiende a aumentar a medida que lo hace el número de habitaciones. Por otro lado, parece estar fuertemente correlacionado negativamente con medv ya que a medida que aumenta el porcentaje de. la población con bajos ingresos disminuye el precio medio de la vivienda.
+
+También cabe destacar que algunas variables como el índice de criminalidad y la distancia ponderada centros de empleo no tienen tanta correlación como cabría esperar.
+
+Es interesante observar que otras variables están fuertemente correlacionadas. Positivamente tenemos indus con nox (porcentaje de zona industrial con polución) y negativamente, dis con indus (distancia ponderada apuestos de empleo con porcentaje de zona industrial), dis con nox y dis con age (porcentaje de viviendas construidas antes de 1940 habitadas).
+
+Veamos ahora si el hecho de bordear con el río o no tiene alguna influencia sobre el precio:
+
+
+
+```{r,echo=FALSE,warnings=FALSE}
+River_bound <- ggplot(data = df, aes(x = chas, y = medv)) +
+  geom_boxplot(aes(color = chas), width = 0.3, show.legend = FALSE) +
+  geom_jitter(aes(color = chas), alpha = 0.5, show.legend = FALSE, position = position_jitter(width = 0.2, seed = 0)) +
+  scale_color_manual(values = c("darkorange","purple")) +
+  labs(x = "Borde con el río",
+       y = "precio medio (en $1000)")
+
+River_bound
+```
+
+```{r,echo=FALSE,warnings=FALSE}
+mean(subset(df,chas=='sí')$medv)
+```
+
+Vemos que en efecto el precio medio de las casas que dan al río es más alto. En particular las casas que bordean con el río tienen un precio medio de \$28.44K que es aproximadamente un 26% más alto que la media.
+
+Vamos a estudiar si la accesibilidad a carreteras radiales tiene alguna influencia sobre el precio:
+
+```{r,echo=FALSE,warnings=FALSE}
+Road_acces <- ggplot(data = df, aes(x = rad, y = medv)) +
+  geom_boxplot(aes(color = rad), width = 0.3, show.legend = FALSE) +
+  geom_jitter(aes(color = rad), alpha = 0.5, show.legend = FALSE, position = position_jitter(width = 0.2, seed = 0)) +
+  scale_color_manual(values = c("darkorange","purple","cyan4",'blue')) +
+  labs(x = "accesibilidad a carreteras radiales",
+       y = "precio medio")
+
+Road_acces
+```
+
+```{r,echo=FALSE,warnings=FALSE}
+mean(subset(df,rad=='bajo')$medv)
+mean(subset(df,rad=='medio')$medv)
+mean(subset(df,rad=='medio alto')$medv)
+mean(subset(df,rad=='alto')$medv)
+
+```
+
+Vemos que en general el precio medio de la vivienda es menor si el acceso a carreteras radiales es mayor, en particular la media de las casas con alto acceso es \$16.4K, un 27% más bajo que la media. Por otro lado la media de las casas con bajo acceso es de \$26.74K, un 19% por encima de la media. Es probable que esto se deba a que las casas más lujosas se encuentran en áreas más exclusivas con menos accesos y las casas más baratas están en áreas más concurridas con más accesos.
+
+Veamos algunos gráficos de las variables más correlacionadas con medv:
+
+```{r,echo=FALSE,warnings=FALSE,message=FALSE}
+library(GGally)
+df_subset=df
+
+df_subset <- df %>% 
+  select(6,11,13,14) %>%
+  na.omit
+
+
+pairs(df_subset, col='blue',pch=20,cex=0.7)
+
+```
+```{r, message=FALSE, warning=FALSE,echo=FALSE}
+cor(df_subset)
+```
+Veamos el gráfico de medv con rm más de cerca
+```{r,echo=FALSE,warnings=FALSE,message=FALSE}
+library(tidyverse)
+library(MVA)
+
+a2<- df %>%
+  select(rm,medv) %>%
+  na.omit %>% as.matrix()
+
+bvbox(a2,xlab = "número de habitaciones", 
+           ylab = "precio medio",
+      pch = 19, cex = 1.1, col = "red")
+```
+Veamos el gráfico de medv con lstat más de cerca
+
+```{r,echo=FALSE,warnings=FALSE}
+ggplot(df) +
+  geom_point(mapping = aes(x = lstat,
+                           y = medv,
+                           color = chas), size=3)+ theme_bw() +
+  theme(axis.text = element_text(size=20),
+        axis.title = element_text(size=20, face = "bold"),
+        legend.title = element_text(size=20)) + 
+  guides(fill = guide_legend(title = "borde con río"),
+         alpha = guide_legend(order = 2))
+```
+```{r,echo=FALSE,warnings=FALSE}
+mean(subset(df,chas=='sí')$lstat)
+```
+En contraste con el gráfico anterior que mostraba un crecimiento aparentemente lineal del precio con respecto el número de habitaciones, parece que el decrecimiento del precio con respecto el aumento del porcentaje de pobreza es más bien logarítmico.
+
+También es interesante observar que a pesar de que tanto la variable chas como la variable lstat influyen de manera notable en el precio medio de la vivienda, la media del porcentaje de pobreza en las zonas que bordean con el río es 11.24 que varía poco la media global, 12.65.
+
+# Contaminación
+
+Ahora vamos a ver la relación de las variables con la contaminación. En el gráfico multivariante de correlaciones hemos podido observar que nuestra variable NOX, que mide el nivel de óxidos nítricos y así nos da una idea del nivel de contaminación, está relacionada con las variables AGE, INDUS y DIS.
+
+```{r,echo=FALSE,warnings=FALSE,message=FALSE}
+a_2 <- df %>%
+  dplyr::select(8,7,3,5) %>%
+  na.omit
+
+ggpairs(a_2)
+```
+En este gráfico multivariante observamos que una medida de la contaminación está positivamente correlada con la cantidad de viviendas antiguas habitadas y la proporción de tierra de negocios mayoristas. Y está negativamente correlada con la distancia a los centros de empleo.
+Ahora también nos podemos preguntar si las viviendas más cercanas al río tienen menor contaminación. En el sigüiente gráfico lo estudiaremos:j
+```{r,echo=FALSE,warnings=FALSE}
+River_bound <- ggplot(data = df, aes(x = chas, y = nox)) +
+  geom_boxplot(aes(color = chas), width = 0.3, show.legend = FALSE) +
+  geom_jitter(aes(color = chas), alpha = 0.5, show.legend = FALSE, position = position_jitter(width = 0.2, seed = 0)) +
+  scale_color_manual(values = c("darkorange","purple")) +
+  labs(x = "Borde con el río",
+       y = "polución")
+
+River_bound
+
+```
+También observaremos el cambio en relación a nuestra variable ordinal que mide la accesibilidad a carreteras radiales
+````{r,echo=FALSE,warnings=FALSE}
+Road_acces <- ggplot(data = df, aes(x = rad, y = nox)) +
+  geom_boxplot(aes(color = rad), width = 0.3, show.legend = FALSE) +
+  geom_jitter(aes(color = rad), alpha = 0.5, show.legend = FALSE, position = position_jitter(width = 0.2, seed = 0)) +
+  scale_color_manual(values = c("darkorange","purple","cyan4",'blue')) +
+  labs(x = "accesibilidad a carreteras radiales",
+       y = "polución")
+
+Road_acces
+```
+
+
+## Conclusión
+
+En conclusión,las variables cuantitativas que más afectan al precio medio de la vivivienda son el número de habitaciones y el porcentaje de porcentaje de la población con bajos ingresos. Tiende a aumentar de manera lineal a medida que aumenta el el número de habitaciones y a disminuir de manera logarítmica a medida que aumenta la proporción de bajos ingresos. 
+
+Por otro lado, el hecho de bordear con el río tiende a ir asociado a un aumento del precio medio en un 26% y tener un índice alto de accesibilidad tiende a ir asociado a una disminución del precio medio en un 27%. 
+
+Finalmente, la polución está relacionada con la con la cantidad de viviendas antiguas habitadas, la proporción de tierra de negocios mayoristas y la distancia a los centros de empleo.
