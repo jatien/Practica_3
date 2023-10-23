@@ -253,7 +253,7 @@ ggplot(df) +
   guides(fill = guide_legend(title = "borde con río"),
          alpha = guide_legend(order = 2))
 ```
-```{r,echo=FALSE,warnings=FALSE,results='hide'}
+```{r,echo=FALSE,warnings=FALSE,results=FALSE}
 mean(subset(df,chas=='sí')$lstat)
 mean(subset(df,chas=='sí')$medv)
 mean(subset(df)$medv)

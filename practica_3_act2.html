@@ -8,7 +8,7 @@
 
 <meta name="author" content="Marcos Gibert y Javi Torres">
 
-<title>Practica 3</title>
+<title>Práctica 3</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -46,7 +46,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Practica 3</h1>
+<h1 class="title">Práctica 3</h1>
 </div>
 
 
@@ -276,12 +276,7 @@ medv     0.6953599 -0.5077867 -0.7376627  1.0000000</code></pre>
 <p><img src="practica_3_act2_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<div class="cell" data-warnings="false">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 11.24171</code></pre>
-</div>
-</div>
-<p>En contraste con el gráfico anterior que mostraba un crecimiento aparentemente lineal del precio con respecto el número de habitaciones, parece que el decrecimiento del precio con respecto el aumento del porcentaje de pobreza es más bien logarítmico.</p>
+<p>En contraste con el gráfico anterior que mostraba un crecimiento aparentemente lineal del precio con respecto el número de habitaciones, parece que el decrecimiento del precio con respecto el aumento del porcentaje de pobreza tiene una tendencia de exponencial inversa.</p>
 <p>También es interesante observar que a pesar de que tanto la variable chas como la variable lstat influyen de manera notable en el precio medio de la vivienda, la media del porcentaje de pobreza en las zonas que bordean con el río es 11.24 que varía poco la media global, 12.65.</p>
 </section>
 <section id="contaminación" class="level1">
@@ -292,13 +287,13 @@ medv     0.6953599 -0.5077867 -0.7376627  1.0000000</code></pre>
 <p><img src="practica_3_act2_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>En este gráfico multivariante observamos que una medida de la contaminación está positivamente correlada con la cantidad de viviendas antiguas habitadas y la proporción de tierra de negocios mayoristas. Y está negativamente correlada con la distancia a los centros de empleo. Ahora también nos podemos preguntar si las viviendas más cercanas al río tienen menor contaminación. En el sigüiente gráfico lo estudiaremos:j</p>
+<p>En este gráfico multivariante observamos que una medida de la contaminación está positivamente correlada con la cantidad de viviendas antiguas habitadas y la proporción de tierra de negocios mayoristas. Y está negativamente correlada con la distancia a los centros de empleo. Ahora también nos podemos preguntar si las viviendas más cercanas al río tienen menor contaminación. En el sigüiente gráfico lo estudiaremos:</p>
 <div class="cell" data-warnings="false">
 <div class="cell-output-display">
 <p><img src="practica_3_act2_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>También observaremos el cambio en relación a nuestra variable ordinal que mide la accesibilidad a carreteras radiales</p>
+<p>También observaremos el cambio en relación a nuestra variable ordinal que mide la accesibilidad a carreteras radiales:</p>
 <div class="cell" data-warnings="false">
 <div class="cell-output-display">
 <p><img src="practica_3_act2_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
@@ -309,6 +304,7 @@ medv     0.6953599 -0.5077867 -0.7376627  1.0000000</code></pre>
 <p>En conclusión,las variables cuantitativas que más afectan al precio medio de la vivivienda son el número de habitaciones y el porcentaje de porcentaje de la población con bajos ingresos. Tiende a aumentar de manera lineal a medida que aumenta el el número de habitaciones y a disminuir de manera logarítmica a medida que aumenta la proporción de bajos ingresos.</p>
 <p>Por otro lado, el hecho de bordear con el río tiende a ir asociado a un aumento del precio medio en un 26% y tener un índice alto de accesibilidad tiende a ir asociado a una disminución del precio medio en un 27%.</p>
 <p>Finalmente, la polución está relacionada con la con la cantidad de viviendas antiguas habitadas, la proporción de tierra de negocios mayoristas y la distancia a los centros de empleo.</p>
+<p>También podemos comentar que ciertas variables que podríamos esperar que tuvieran una mayor correlación con el precio medio de la vivienda no la tienen. Por ejemplo cabría esperar que la tasa de impuestos estuviera fuertemente correlacionada con el valor de la vivienda, y aunque tiene cierta correlación quizás nos podríamos que esta fuera mayor. También podemos observar que la tasa criminalidad en una población no parece afectar demasiado al precio.</p>
 </section>
 </section>
 
