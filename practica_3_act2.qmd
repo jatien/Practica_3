@@ -1,5 +1,5 @@
 ---
-title: "Practica 3"
+title: "Práctica 3"
 format: html
 author: "Marcos Gibert y Javi Torres"
 editor: visual
@@ -253,12 +253,14 @@ ggplot(df) +
   guides(fill = guide_legend(title = "borde con río"),
          alpha = guide_legend(order = 2))
 ```
-```{r,echo=FALSE,warnings=FALSE}
+```{r,echo=FALSE,warnings=FALSE,results='hide'}
 mean(subset(df,chas=='sí')$lstat)
+mean(subset(df,chas=='sí')$medv)
+mean(subset(df)$medv)
 ```
-En contraste con el gráfico anterior que mostraba un crecimiento aparentemente lineal del precio con respecto el número de habitaciones, parece que el decrecimiento del precio con respecto el aumento del porcentaje de pobreza es más bien logarítmico.
+En contraste con el gráfico anterior que mostraba un crecimiento aparentemente lineal del precio con respecto el número de habitaciones, parece que el decrecimiento del precio con respecto el aumento del porcentaje de pobreza tiene una tendencia de exponencial inversa.
 
-También es interesante observar que a pesar de que tanto la variable chas como la variable lstat influyen de manera notable en el precio medio de la vivienda, la media del porcentaje de pobreza en las zonas que bordean con el río es 11.24 que varía poco la media global, 12.65.
+También es interesante observar que a pesar de que tanto la variable chas como la variable lstat influyen de manera notable en el precio medio de la vivienda, la media del porcentaje de pobreza en las zonas que bordean con el río es 11.24 que varía poco la media global, 12.65. 
 
 # Contaminación
 
@@ -272,7 +274,7 @@ a_2 <- df %>%
 ggpairs(a_2)
 ```
 En este gráfico multivariante observamos que una medida de la contaminación está positivamente correlada con la cantidad de viviendas antiguas habitadas y la proporción de tierra de negocios mayoristas. Y está negativamente correlada con la distancia a los centros de empleo.
-Ahora también nos podemos preguntar si las viviendas más cercanas al río tienen menor contaminación. En el sigüiente gráfico lo estudiaremos:j
+Ahora también nos podemos preguntar si las viviendas más cercanas al río tienen menor contaminación. En el sigüiente gráfico lo estudiaremos:
 ```{r,echo=FALSE,warnings=FALSE}
 River_bound <- ggplot(data = df, aes(x = chas, y = nox)) +
   geom_boxplot(aes(color = chas), width = 0.3, show.legend = FALSE) +
@@ -284,7 +286,7 @@ River_bound <- ggplot(data = df, aes(x = chas, y = nox)) +
 River_bound
 
 ```
-También observaremos el cambio en relación a nuestra variable ordinal que mide la accesibilidad a carreteras radiales
+También observaremos el cambio en relación a nuestra variable ordinal que mide la accesibilidad a carreteras radiales:
 ````{r,echo=FALSE,warnings=FALSE}
 Road_acces <- ggplot(data = df, aes(x = rad, y = nox)) +
   geom_boxplot(aes(color = rad), width = 0.3, show.legend = FALSE) +
@@ -304,3 +306,5 @@ En conclusión,las variables cuantitativas que más afectan al precio medio de l
 Por otro lado, el hecho de bordear con el río tiende a ir asociado a un aumento del precio medio en un 26% y tener un índice alto de accesibilidad tiende a ir asociado a una disminución del precio medio en un 27%. 
 
 Finalmente, la polución está relacionada con la con la cantidad de viviendas antiguas habitadas, la proporción de tierra de negocios mayoristas y la distancia a los centros de empleo.
+
+También podemos comentar que ciertas variables que podríamos esperar que tuvieran una mayor correlación con el precio medio de la vivienda no la tienen. Por ejemplo cabría esperar que la tasa de impuestos estuviera fuertemente correlacionada con el valor de la vivienda, y aunque tiene cierta correlación quizás nos podríamos que esta fuera mayor. También podemos observar que la tasa criminalidad en una población no parece afectar demasiado al precio. 
