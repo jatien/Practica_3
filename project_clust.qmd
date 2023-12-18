@@ -1,14 +1,16 @@
 ---
-title: "practica 4"
+title: "Práctica 4"
 format: html
 editor: visual
 ---
-Comenzaremos recordando que el dataset se basa en observaciones sobre viviendas en Boston. El objetivo de este dataset era el de ver si las distintas variables eran buenas prediciendo el valor medio de la vivienda.
-Primero haremos un análisis de componentes principales de nuestros datos y después haremos clustering para ver cómo se agrupan nuestros datos.
+
+[Repositorio GitHub](https://github.com/jatien/Practica_3)
+
+Comenzaremos recordando que el dataset se basa en observaciones sobre viviendas en Boston. El objetivo de este dataset era el de ver si las distintas variables eran buenas prediciendo el valor medio de la vivienda. Primero haremos un análisis de componentes principales de nuestros datos y después haremos clustering para ver cómo se agrupan nuestros datos.
+
 ## ACP
 
-
-```{r,echo=FALSE,warnings=FALSE}
+```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 library(MASS)
 library(ggplot2)
 library(tidyverse)
@@ -16,11 +18,11 @@ library(factoextra)
 df <- as.data.frame(Boston)
 ```
 
-```{r,echo=FALSE,warnings=FALSE}
+```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 df$chas <- ifelse(df$chas == 1, 'sí', 'no')
 ```
 
-```{r,echo=FALSE,warnings=FALSE}
+```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 df <-df %>%
   mutate(rad = case_when(
     rad < 4 ~ 'bajo',
@@ -32,57 +34,57 @@ df <-df %>%
 
 ```
 
-```{r,echo=FALSE,warnings=FALSE}
+```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 df$chas <- ifelse(df$chas == 1, 'sí', 'no')
 df_numeric=df
 df_numeric[,4] <- NULL
 df_numeric[,8] <- NULL
 ```
 
-```{r,echo=FALSE,warnings=FALSE}
+```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 df_scaled=data.frame(scale(df_numeric))
 ```
 
-```{r,echo=FALSE,warnings=FALSE}
+```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 df_acp=prcomp(df_scaled)
 ```
 
-```{r,echo=FALSE,warnings=FALSE,message=FALSE}
-lambdas=get_eigenvalue(df_acp)
-lambdas
-```
- Con el siguiente gráfico veremos las componentes principales que nos serán necesarias:
- 
-```{r}
+
+Con el siguiente gráfico veremos las componentes principales que nos serán necesarias:
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
 fviz_eig(df_acp, addlabels = TRUE, ylim=c(0,100))
 ```
 
-Vemos que a partir de la dimensión 2 todas tienen un porcentaje similar y por tanto la reducción de dimensionalidad no será óptima, ya que si nos quedamos  con 2 dimensiones solo explicarán alrededor de un 60% de la varianza total. Sin embargo para visualizar el análisis de componentes principales escogeremos dos dimensiones.
-Ahora veamos el gráfico Biplot:
+Vemos que a partir de la dimensión 2 todas tienen un porcentaje similar y por tanto la reducción de dimensionalidad no será óptima, ya que si nos quedamos con 2 dimensiones solo explicarán alrededor de un 60% de la varianza total. Sin embargo para visualizar el análisis de componentes principales escogeremos dos dimensiones. Ahora veamos el gráfico Biplot:
+
 ```{r,,echo=FALSE,warnings=FALSE}
 fviz_pca_var(df_acp, col.var = "contrib",
             
              repel = TRUE) 
 ```
 
-De este gráfico es complicado sacar una información clara sobre el dataset pero al menos podemos observar la correlación de las variables. En general parece que hay muchas variables que se correlacionan entre ellas.
-En el siguiente gráfico vemos qué variables están mejor representadas por el análisis de componentes.
-```{r}
+De este gráfico es complicado sacar una información clara sobre el dataset pero al menos podemos observar la correlación de las variables. En general parece que hay muchas variables que se correlacionan entre ellas. En el siguiente gráfico vemos qué variables están mejor representadas por el análisis de componentes.
+
+```{r,echo=FALSE}
 var <- get_pca_var(df_acp)
 fviz_cos2(df_acp, choice = "var", axes = 1:2)
 ```
+
 Ahora como en la exposición anterior separamos la variable sobre el acceso a carreteras radiales en una variable cualitativa ordinal y vemos si con el análisis de componentes principales vemos una diferenciación.
 
-```{r}
+```{r,echo=FALSE,warning=FALSE}
 library(ggfortify)
 autoplot(df_acp, data = df, colour = 'rad')
 
 ```
+
 Quizás las de más accesos si observamos que se agrupan un poco pero los demás datos no están para nada diferenciados.
+
 ## CLUSTERING
-Ahora pasaremos al clustering. Como hemos dicho antes el objetivo de este dataset era el de intentar ver si los datos recogidos agrupados en diferentes variables que de alguna manera caracterizan las viviendas pueden predecir el precio medio de la vivienda. Por lo tanto lo que buscaríamos idealmente es que se creasen cluster dependiendo de el precio medio de la vivienda.
-\\
-Vamos a empezar con el clustering. Vamos a usar diferentes métodos, usando el paquete factoextra veamos cuántos clusters necesitamos. 
+
+Ahora pasaremos al clustering. Como hemos dicho antes el objetivo de este dataset era el de intentar ver si los datos recogidos agrupados en diferentes variables que de alguna manera caracterizan las viviendas pueden predecir el precio medio de la vivienda. Por lo tanto lo que buscaríamos idealmente es que se creasen cluster dependiendo de el precio medio de la vivienda. Vamos a empezar con el clustering. Vamos a usar diferentes métodos, usando el paquete factoextra veamos cuántos clusters necesitamos.
+
 ```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 library(factoextra)
 fviz_nbclust(x = df_scaled, FUNcluster = kmeans, method = "wss",
@@ -96,22 +98,22 @@ kmeans_result <- kmeans(principal_components[, 1:2], centers = 4, nstart = 50)
 
 # Access the cluster assignments
 cluster_assignments <- kmeans_result$cluster
-
-# Display the cluster assignments
-print(cluster_assignments)
 ```
 
-```{r}
+```{r,echo=FALSE,warning=FALSE}
 plot(principal_components[, 1:2], col = cluster_assignments, pch = 16, main = "K-means Clustering")
 ```
+
 Veamos si los diferentes rangos de la variable rad se agrupan de forma correcta en los clusters.
-```{r}
+
+```{r,echo=FALSE,message=FALSE}
 table(kmeans_result$cluster, df[, "rad"],
  dnn = list("cluster", "grupo real"))
 ```
+
 Vemos que no tiene demasiada relación.
 
-```{r}
+```{r,echo=FALSE}
 library(cluster)
 library(factoextra)
 fviz_nbclust(x = df_scaled, FUNcluster = pam, method = "wss",
@@ -121,16 +123,17 @@ fviz_nbclust(x = df_scaled, FUNcluster = pam, method = "wss",
 ```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 set.seed(123)
 pam_clusters <- pam(x = df_scaled, k = 3, metric = "manhattan")
-pam_clusters
 ```
 
 ```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 clara_clusters <- clara(x = df_scaled, k = 4, metric = "manhattan", stand = TRUE,
  samples = 50, pamLike = TRUE)
-clara_clusters
+
 ```
+
 Ahora vamos a hacer otro clustering, donde usaremos la distancia Manhattan.
-```{r}
+
+```{r,echo=FALSE}
 fviz_cluster(object = clara_clusters, ellipse.type = "t", geom = "point") +
 theme_bw() +
 theme(legend.position = "none")
@@ -141,13 +144,11 @@ mat_dist <- dist(x = df_scaled, method = "euclidean")
 # Dendrogramas con linkage complete y average
 hc_ward <- hclust(d = mat_dist, method = "ward.D2")
 hc_average <- hclust(d = mat_dist, method = "average")
-cor(x = mat_dist, cophenetic(hc_ward))
 ```
 
-```{r,echo=FALSE,warnings=FALSE,message=FALSE}
-cor(x = mat_dist, cophenetic(hc_average))
-```
+
 Aquí haremos el cambio de la variable de precio medio y la cambiaremos por una variable cualitativa usando los cuantiles y así podremos observar si los clusters se agrupan siguiendo un poco el precio medio de la vivienda.
+
 ```{r}
 quantiles <- quantile(df$medv, probs = c(1/3, 2/3))
 medv3 = cut(df$medv, breaks = c(-Inf, quantiles, Inf), labels = c("Low", "Medium", "High"), include.lowest = TRUE)
@@ -155,37 +156,7 @@ df_medv=df_scaled
 df_medv$medv=medv3
 ```
 
-```{r}
-fviz_cluster(object = list(data = df_scaled, cluster = cutree(hc_average, k = 3)),
- ellipse.type = "convex",
- repel = TRUE,
- show.clust.cent = FALSE,geom="point") +
-theme_bw()
-```
-```{r}
-
-table(cutree(hc_ward,k=3), df_medv[, "medv"],
-      dnn = list("cluster","grupo real"))
-```
-
-
-
-```{r}
-fviz_cluster(object = list(data = df_scaled, cluster = cutree(hc_ward, k = 3)),
- ellipse.type = "convex",
- repel = TRUE,
- show.clust.cent = FALSE, geom='point') +
-theme_bw()
-```
-
-
-
-```{r,echo=FALSE,warnings=FALSE,message=FALSE}
-summary(df_scaled)
-```
-
-
-```{r}
+```{r,echo=FALSE,message=FALSE}
 table(df_medv$medv)
 ```
 
@@ -201,14 +172,12 @@ df_acp2=prcomp(df_scaled2)
 
 ```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 lambdas=get_eigenvalue(df_acp2)
-lambdas
 ```
 
 ```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 library(ggfortify)
 autoplot(df_acp2, data = df_medv, colour = 'medv')
 ```
-
 ```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 set.seed(123)
 principal_components <- df_acp2$x
@@ -218,17 +187,71 @@ kmeans_result <- kmeans(principal_components[, 1:2], centers = 3, nstart = 50)
 cluster_assignments <- kmeans_result$cluster
 
 # Display the cluster assignments
-print(cluster_assignments)
 ```
 
 ```{r,echo=FALSE}
 plot(principal_components[, 1:2], col = cluster_assignments, pch = 16, main = "K-means Clustering")
 ```
-
-
 ```{r,echo=FALSE}
 table(kmeans_result$cluster, df_medv[, "medv"],
  dnn = list("cluster", "grupo real"))
+```
+
+Aplicaremos métodos jerárquicos con diferentes distancias. Vemos que el método linkage average tiene una mayor correlación pero después el gráfico no da buen resultado.
+
+```{r,warnings=FALSE,message=FALSE}
+mat_dist <- dist(x = df_scaled, method = "euclidean")
+mat_dist2 <- get_dist(x = df_numeric, method = "pearson")
+# Dendrogramas con linkage complete y average
+hc_ward <- hclust(d = mat_dist, method = "ward.D2")
+hc_average <- hclust(d = mat_dist, method = "average")
+hc_2ward <- hclust(d = mat_dist2, method = "ward.D2")
+```
+
+```{r}
+cor(x=mat_dist,cophenetic(hc_ward))
+cor(x = mat_dist, cophenetic(hc_average))
+```
+
+
+```{r,echo=FALSE}
+fviz_cluster(object = list(data = df_scaled, cluster = cutree(hc_average, k = 3)),
+ ellipse.type = "convex",
+ repel = TRUE,
+ show.clust.cent = FALSE,geom="point") +
+theme_bw()
+```
+
+
+
+```{r,echo=FALSE}
+fviz_cluster(object = list(data = df_scaled, cluster = cutree(hc_ward, k = 3)),
+ ellipse.type = "convex",
+ repel = TRUE,
+ show.clust.cent = FALSE, geom='point') +
+theme_bw()
+```
+
+
+```{r,echo=FALSE}
+table(cutree(hc_ward,k=3), df_medv[, "medv"],
+      dnn = list("cluster","grupo real"))
+```
+
+
+Si lo hacemos con la correlación de Pearson obtenemos:
+
+```{r,echo=FALSE}
+fviz_cluster(object = list(data = df_scaled, cluster = cutree(hc_2ward, k = 3)),
+ ellipse.type = "convex",
+ repel = TRUE,
+ show.clust.cent = FALSE,geom="point") +
+theme_bw()
+```
+
+```{r,echo=FALSE}
+table(cutree(hc_2ward,k=3), df_medv[, "medv"],
+      dnn = list("cluster","grupo real"))
 ```
 
 ```{r,echo=FALSE,warnings=FALSE,message=FALSE}
@@ -244,9 +267,10 @@ colnames(A) = c('x', 'y')
 ```{r,echo=FALSE,warnings=FALSE,message=FALSE}
 clara_clusters <- clara(x = df_scaled2, k = 3, metric = "manhattan", stand = TRUE,
  samples = 50, pamLike = TRUE)
-clara_clusters
 ```
-Ahora usaremos el paquete clara
+
+Ahora usaremos el paquete clara con la distancia Manhattan
+
 ```{r,echo=FALSE}
 fviz_cluster(object = clara_clusters, ellipse.type = "t", geom = "point") +
 theme_bw() +
@@ -258,37 +282,9 @@ theme(legend.position = "none")
 table(clara_clusters$cluster, df_medv[, "medv"],
  dnn = list("cluster", "grupo real"))
 ```
-También hacemos el clustering  usando la correlación de Pearson y vemos que los clusters quedan muy parecidos a los anteriores, por lo tanto cualitativamente no hay mucha diferencia entre ambas distancias.
-```{r,echo=FALSE,warnings=FALSE,message=FALSE}
-set.seed(123)
-dist_cor <- 1 - cor(x = df_numeric, method = "pearson")
-mat_dist1 <- get_dist(x = df_numeric, method = "pearson")
-mat_dist <- as.matrix(mat_dist1)
 
-```
 
-```{r,echo=FALSE}
-fviz_cluster(object = pam_clusters, data = df_numeric, ellipse.type = "t", repel = TRUE,diss=mat_dist,geom="point") +
-theme_bw()
-```
 
-Finalmente veremos cómo queda con un cluster jerárquico, que normalmente se representarían con dendogramas pero como el conjunto de datos es demasiado grande lo representaremos sin. La distancia también que usaremos será la de Pearson.
-```{r,echo=FALSE,warnings=FALSE,message=FALSE}
-mat_dist <- 1- cor(x = df_scaled2, method = "pearson")
-mat_dist2 <- dist(x=df_scaled2, method = "manhattan")
-# Dendrogramas con linkage complete y average
-hc_ward2 <- hclust(d = mat_dist2, method = "ward.D2")
-```
 
-```{r,echo=FALSE}
-fviz_cluster(object = list(data = df_scaled2, cluster = cutree(hc_ward2, k = 3)),
- ellipse.type = "convex",
- repel = TRUE,
- show.clust.cent = FALSE, geom='point') +
-theme_bw()
-```
 
-```{r,echo=FALSE,warnings=FALSE}
-table(cutree(hc_ward2, k = 3), df_medv[, "medv"],
- dnn = list("cluster", "grupo real"))
-```
+
